@@ -28,20 +28,25 @@ export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface UserLLMSettings { 'apiKey': string, 'model': string }
+export interface ChatMessage { 'role': string, 'content': string }
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'callLLM' : ActorMethod<[Array<ChatMessage>, Array<string>], string>,
   'createNote' : ActorMethod<[string, string, string], string>,
   'createProject' : ActorMethod<[string, string], string>,
   'deleteNote' : ActorMethod<[string], undefined>,
   'deleteProject' : ActorMethod<[string], undefined>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getLLMSettings' : ActorMethod<[], [] | [UserLLMSettings]>,
   'getNotes' : ActorMethod<[string], Array<Note>>,
   'getProjects' : ActorMethod<[], Array<Project>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveLLMSettings' : ActorMethod<[string, string], undefined>,
   'updateNote' : ActorMethod<[string, string, string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

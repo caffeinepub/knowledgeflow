@@ -111,23 +111,34 @@ export enum UserRole {
     user = "user",
     guest = "guest"
 }
+export interface UserLLMSettings {
+    apiKey: string;
+    model: string;
+}
+export interface ChatMessage {
+    role: string;
+    content: string;
+}
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    callLLM(messages: Array<ChatMessage>, contextNoteIds: Array<string>): Promise<string>;
     createNote(projectId: string, title: string, body: string): Promise<string>;
     createProject(name: string, description: string): Promise<string>;
     deleteNote(noteId: string): Promise<void>;
     deleteProject(projectId: string): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getLLMSettings(): Promise<UserLLMSettings | null>;
     getNotes(projectId: string): Promise<Array<Note>>;
     getProjects(): Promise<Array<Project>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveLLMSettings(apiKey: string, model: string): Promise<void>;
     updateNote(noteId: string, title: string, body: string): Promise<void>;
 }
-import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { UserProfile as _UserProfile, UserRole as _UserRole, UserLLMSettings as _UserLLMSettings, ChatMessage as _ChatMessage } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -155,6 +166,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async callLLM(arg0: Array<ChatMessage>, arg1: Array<string>): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.callLLM(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.callLLM(arg0, arg1);
             return result;
         }
     }
@@ -242,6 +267,20 @@ export class Backend implements backendInterface {
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getLLMSettings(): Promise<UserLLMSettings | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getLLMSettings();
+                return result.length === 0 ? null : result[0];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getLLMSettings();
+            return result.length === 0 ? null : result[0];
+        }
+    }
     async getNotes(arg0: string): Promise<Array<Note>> {
         if (this.processError) {
             try {
@@ -309,6 +348,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async saveLLMSettings(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveLLMSettings(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveLLMSettings(arg0, arg1);
             return result;
         }
     }

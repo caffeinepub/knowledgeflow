@@ -28,16 +28,20 @@ export const Project = IDL.Record({
   'createdAt' : IDL.Int,
   'description' : IDL.Text,
 });
+export const UserLLMSettings = IDL.Record({ 'apiKey': IDL.Text, 'model': IDL.Text });
+export const ChatMessage = IDL.Record({ 'role': IDL.Text, 'content': IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'callLLM' : IDL.Func([IDL.Vec(ChatMessage), IDL.Vec(IDL.Text)], [IDL.Text], []),
   'createNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Text], []),
   'createProject' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
   'deleteNote' : IDL.Func([IDL.Text], [], []),
   'deleteProject' : IDL.Func([IDL.Text], [], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getLLMSettings' : IDL.Func([], [IDL.Opt(UserLLMSettings)], ['query']),
   'getNotes' : IDL.Func([IDL.Text], [IDL.Vec(Note)], ['query']),
   'getProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
   'getUserProfile' : IDL.Func(
@@ -47,6 +51,7 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveLLMSettings' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'updateNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
 });
 
@@ -73,16 +78,20 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : IDL.Int,
     'description' : IDL.Text,
   });
+  const UserLLMSettings = IDL.Record({ 'apiKey': IDL.Text, 'model': IDL.Text });
+  const ChatMessage = IDL.Record({ 'role': IDL.Text, 'content': IDL.Text });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'callLLM' : IDL.Func([IDL.Vec(ChatMessage), IDL.Vec(IDL.Text)], [IDL.Text], []),
     'createNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Text], []),
     'createProject' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
     'deleteNote' : IDL.Func([IDL.Text], [], []),
     'deleteProject' : IDL.Func([IDL.Text], [], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getLLMSettings' : IDL.Func([], [IDL.Opt(UserLLMSettings)], ['query']),
     'getNotes' : IDL.Func([IDL.Text], [IDL.Vec(Note)], ['query']),
     'getProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
     'getUserProfile' : IDL.Func(
@@ -92,6 +101,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveLLMSettings' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'updateNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   });
 };
